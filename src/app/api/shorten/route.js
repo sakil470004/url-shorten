@@ -15,15 +15,15 @@ export async function POST(req) {
       return new Response(JSON.stringify({ error: 'URL is required' }), { status: 400 });
     }
     // get current page base url.
-    const baseUrl = headers().get('x-forwarded-host') || process.env.BASE_URL || 'http://localhost:3000';
-
+    const header = await headers()
+    const baseUrl = header.get('x-forwarded-host') || process.env.BASE_URL || 'http://localhost:3000';
     const db = client.db('urlShortener');
     const collection = db.collection('urls');
 
     const shortId = nanoid(6);
     await collection.insertOne({ shortId, url });
 
-    return new Response(JSON.stringify({ shortUrl: `${baseUrl}/${shortId}` }), { status: 201 });
+    return new Response(JSON.stringify({ shortUrl: `${baseUrl}/${shortId}`, shortId }), { status: 201 });
   } catch (error) {
     console.error(error);
     return new Response(JSON.stringify({ error: 'Internal Server Error' }), { status: 500 });

@@ -5,9 +5,12 @@ import toast from "react-hot-toast";
 export default function Home() {
   const [url, setUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
+  const [shortenId, setShortenId] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const response = await fetch("/api/shorten", {
       method: "POST",
@@ -16,9 +19,11 @@ export default function Home() {
     });
 
     const data = await response.json();
+    setLoading(false);
 
     if (response.ok) {
       setShortUrl(data.shortUrl);
+      setShortenId(data.shortId);
     } else {
       alert(data.error || "Something went wrong");
     }
@@ -54,8 +59,9 @@ export default function Home() {
           <button
             type="submit"
             className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
+            disabled={loading}
           >
-            Shorten
+            {loading ? "Shortening..." : "Shorten"}
           </button>
         </form>
 
@@ -64,7 +70,7 @@ export default function Home() {
             <p className="text-lg font-medium">Shortened URL:</p>
             <div className="flex items-center justify-center">
               <a
-                href={shortUrl}
+                href={shortenId}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-green-500 font-bold hover:underline"
