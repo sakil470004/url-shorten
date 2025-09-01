@@ -34,6 +34,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function RedirectPage({ params: rawParams }) {
+    // because if I don't change params to rawParams, it will not work.reason The programme ran before params were fully resolved
     const { shortId } = await rawParams;
     console.log(shortId)
     let record
